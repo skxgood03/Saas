@@ -1,0 +1,66 @@
+{% extends 'layout/basic.html' %}
+{% load static %}
+{% block title %}登录{% endblock %}
+{% block css %}
+    <link rel="stylesheet" href="{% static 'css/account.css' %}">
+    <style>
+        .error-msg {
+            color: red;
+            position: absolute;
+            font-size: 10px;
+        }
+    </style>
+{% endblock %}
+{% block content %}
+    <div class="account">
+        <div class="title">用户登录</div>
+        <form  method="POST" novalidate>
+            {% csrf_token %}
+            {% for field in form %}
+                {% if field.name == 'code' %}
+                    <div class="form-group">
+                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                        <div class="row">
+                            <div class="col-xs-7">
+                                {{ field }}
+                                <span class="error-msg">{{ field.errors.0 }}</span>
+                            </div>
+                            <div class="col-xs-5">
+                                <img src="{% url 'image_code' %}" alt="" id="imageCode">
+                            </div>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="form-group">
+                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                        {{ field }}
+                        <span class="error-msg">{{ field.errors.0 }}</span>
+                    </div>
+                {% endif %}
+            {% endfor %}
+
+            <div style="float: right">
+                <a href="{% url 'login_sms' %}">短信验证码登录</a>
+            </div>
+
+            <div class="row">
+                <div class="col-xs-3">
+                    <input  type="submit" class="btn btn-primary" value="登  录"/>
+                </div>
+            </div>
+        </form>
+    </div>
+
+{% endblock %}
+
+
+{% block js %}
+    <script>
+    $(function () {
+        $('#imageCode').click(function () {
+            var oldSrc = $(this).attr('src'); //获取原来地址
+            $(this).attr('src',oldSrc + "?")  //加问号,新地址,就要发送请求,就是实现点击更换验证码功能
+        })
+    })
+    </script>
+{% endblock %}

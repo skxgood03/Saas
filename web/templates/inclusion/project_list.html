@@ -1,0 +1,28 @@
+<ul class="nav navbar-nav">
+
+    <li class="dropdown active">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">项目 {% if request.saas.project.name  %}
+        ({{ request.saas.project.name }})
+        {% endif %}
+            <span class="caret"></span></a>
+        <ul class="dropdown-menu" role="menu">
+            {% if my %}
+                <li><i class="fa fa-list" aria-hidden="true"></i>我创建的</li>
+                {% for item in my %}
+                    <li><a href="{% url 'dashboard' project_id=item.id %}">{{ item.name }}</a></li>
+                {% endfor %}
+
+            {% endif %}
+
+            {% if join %}
+                <li class="divider"></li>
+                <li><i class="fa fa-handshake-o" aria-hidden="true"></i> 我参与的</li>
+                {% for item in my %}
+                    <li><a href="{% url 'dashboard' project_id=item.project.id %}">{{ item.project.name }}</a></li>
+                {% endfor %}
+            {% endif %}
+            <li class="divider"></li>
+            <li><a href="{% url 'project_list' %}">所有项目</a></li>
+        </ul>
+    </li>
+</ul>

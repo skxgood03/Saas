@@ -1,0 +1,153 @@
+{% extends 'layout/manage.html' %}
+{% load static %}
+{% block css %}
+    <link rel="stylesheet" href="{% static 'plugin/Marked/css/editormd.preview.min.css' %}">
+    <style>
+        .panel-body {
+            padding: 0;
+        }
+
+        .panel-default .panel-heading {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+        }
+
+        .title-list {
+            border-right: 1px solid #dddddd;
+            min-height: 600px
+        }
+
+        .content {
+            border-right: 1px solid #dddddd;
+            min-height: 600px;
+            margin-left: -1px;
+        }
+
+        .title-list ul {
+            padding-left: 15px;
+        }
+
+        .title-list ul a {
+            display: block;
+            padding: 5px 0;
+        }
+
+        .content {
+            border-left: 1px solid #dddddd;
+            min-height: 600px;
+            margin-left: -1px;
+        }
+    </style>
+{% endblock %}
+{% block content %}
+    <div class="container-fluid">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <div>
+                    <i class="fa fa-book" aria-hidden="true"></i> wiki文档
+                </div>
+                <div class="function">
+                    <a type="button" class="btn btn-success btn-xs"
+                       href="{% url 'wiki_add' project_id=request.saas.project.id %}">
+                        <i class="fa fa-plus-circle" aria-hidden="true"></i> 新建
+                    </a>
+                    {% if wiki_object %}
+                        <a type="button" class="btn btn-primary btn-xs"
+                           href="{% url 'wiki_edit' project_id=request.saas.project.id wiki_id=wiki_object.id %}">
+                            <i class="fa fa-edit" aria-hidden="true"></i> 编辑
+                        </a>
+                        <a type="button" class="btn btn-danger btn-xs"
+                           href="{% url 'wiki_delete' project_id=request.saas.project.id wiki_id=wiki_object.id %} "
+                           onclick="return del()">
+                            <i class="fa fa-trash" aria-hidden="true"></i> 删除
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="panel-body">
+                <div class="col-sm-3 title-list">
+                    <ul id="catalog">
+                    </ul>
+
+                </div>
+                <div class="col-sm-9 content">
+                    {% if wiki_object %}
+                        <div id="previewMarkldown">
+                            <textarea>{{ wiki_object.content }}</textarea>
+                        </div>
+
+                    {% else %}
+                        <div style="text-align: center;margin-top: 50px">
+                            <h4 style="font-weight:bold"> 《{{ request.saas.project.name }}》wiki文档库</h4>
+                            <a href="{% url 'wiki_add' project_id=request.saas.project.id %}">
+                                <i class="fa fa-plus-square" aria-hidden="true"></i> 新建文章
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block js %}
+    <script src="{% static 'plugin/Marked/editormd.min.js' %}"></script>
+    <script src="{% static 'plugin/Marked/lib/marked.min.js' %}"></script>
+    <script src="{% static 'plugin/Marked/lib/prettify.min.js' %}"></script>
+    <script src="{% static 'plugin/Marked/lib/raphael.min.js' %}"></script>
+    <script src="{% static 'plugin/Marked/lib/underscore.min.js' %}"></script>
+    <script src="{% static 'plugin/Marked/lib/sequence-diagram.min.js' %}"></script>
+    <script src="{% static 'plugin/Marked/lib/flowchart.min.js' %}"></script>
+    <script src="{% static 'plugin/Marked/lib/jquery.flowchart.min.js' %}"></script>
+    <script>
+
+        var WIKI_DETAIL_URL = '{% url 'wiki' project_id=request.saas.project.id %}'
+        $(function () {
+            initCatalog();
+            initPreviewMarkldown()
+
+        });
+        function initPreviewMarkldown() {
+            editormd.markdownToHTML('previewMarkldown',{
+                htmlDecode: "style,script,iframe" //防止xss攻击
+            })
+        }
+
+        function initCatalog() {
+            $.ajax({
+                url: '{% url 'wiki_catalog' project_id=request.saas.project.id %}',
+                type: 'GET',
+                dataType: 'JSON',
+                success: function (res) {
+                    if (res.status) {
+                        $.each(res.data, function (index, item) {
+                            var href = WIKI_DETAIL_URL + "?wiki_id=" + item.id;
+                            var li = $("<li>").attr('id', "id_" + item.id).append($('<a>').text(item.title).attr('href', href)).append($('<ul>'));
+
+                            if (!item.parent_id) {
+                                // 添加到catalog中
+                                $('#catalog').append(li);
+                            } else {
+                                $("#id_" + item.parent_id).children('ul').append(li);
+                            }
+                        })
+                    } else {
+                        alert('初始化目录失败')
+                    }
+                }
+            })
+
+        }
+
+        function del() {
+            if (confirm('确认要删除吗?')) {
+                return true
+            } else {
+                return false
+            }
+
+        }
+    </script>
+{% endblock %}
