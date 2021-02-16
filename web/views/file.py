@@ -2,6 +2,7 @@ from django.shortcuts import render
 from web.forms.file import FileFolderModelForm
 from django.http import JsonResponse
 from web.models import *
+from utils.tencent.cos import *
 
 def file(request, project_id):
     '''文件列表'''
@@ -51,3 +52,46 @@ def file(request, project_id):
         return JsonResponse({'status': True})
 
     return JsonResponse({'status': False, 'error': form.errors})
+
+
+def file_delete(request,project_id):
+    """删除文件"""
+    fid = request.GET.get('fid')
+    #删除数据库文件和文件夹(级联删除)
+    delete_object = FileRepository.objects.filter(id=fid,project=request.saas.project).first()
+    if delete_object.file_type == 1:
+        #删除文件(数据库文件/cos文件),并且把空间还回去
+        #删除文件,将容量还回去
+        request.saas.project.use_space -= delete_object.file_size
+        request.saas.project.save()
+        #去cos中删除文件
+        delete_file(request.saas.project.bucket,request.saas.project.region,delete_object.key)
+        delete_object.delete()
+        return JsonResponse({'status': True})
+    else:
+        #删除文件夹(找到文件夹下面的所有文件,删除并且把空间还回去)
+        total_size = 0
+        key_list = []
+        folder_list = [delete_object,]
+        for folder in folder_list:
+            child_list = FileRepository.objects.filter(project=request.saas.project,parent=folder).order_by('-file_type')
+            for child in child_list:
+                if child.file_type == 2:
+                    folder_list.append(child)
+                else:
+                    #文件大小汇总
+                    total_size +=child.file_type
+
+                    #删除文件
+                    key_list.append({"Key":child.key})
+
+        #cos 批量删除文件
+        if key_list:
+            delete_file_list(request.saas.project.bucket,request.saas.project.region,key_list)
+        #归还容量
+        if total_size:
+            request.saas.project.use_space -= total_size
+            request.saas.project.save()
+
+        delete_object.delete()
+        return JsonResponse({'status': True})

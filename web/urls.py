@@ -35,6 +35,7 @@ urlpatterns = [
         path('statistics/', manage.statistics, name='statistics'),
         path('setting/', manage.setting, name='setting'),
         path('file/', file.file, name='file'),
+        path('file/delete', file.file_delete, name='file_delete'),
 
     ], None))
 
