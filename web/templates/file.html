@@ -1,5 +1,5 @@
 {% extends 'layout/manage.html' %}
-
+{% load static %}
 {% block css %}
     <style>
         .panel-default .panel-heading {
@@ -14,6 +14,31 @@
 
         .panel-default > .panel-heading span {
             padding: 0 5px;
+        }
+
+        .panel-default > .panel-heading .function .upload {
+            overflow: hidden;
+        }
+
+        .panel-default > .panel-heading .function .upload input {
+            opacity: 0;
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 76px;
+            left: -2px;
+            overflow: hidden;
+        }
+
+        .upload-progress {
+            position: fixed;
+            right: 2px;
+            bottom: 2px;
+            width: 400px;
+        }
+
+        .upload-progress .progress-error {
+            color: red;
         }
     </style>
 {% endblock %}
@@ -36,7 +61,11 @@
                     {% endfor %}
 
                 </div>
-                <div>
+                <div class="function">
+                    <div class="btn btn-primary btn-xs upload" style="position: relative">
+                        <div><i class="fa fa-upload" aria-hidden="true"></i> 上传文件</div>
+                        <input type="file" multiple name="uploadFile" id="uploadFile">
+                    </div>
                     <a class="btn btn-success btn-xs" data-toggle="modal" data-target="#addModal" data-whatever="新建文件夹">
                         <i class="fa fa-plus-circle" aria-hidden="true"></i> 新建文件夹
                     </a>
@@ -150,18 +179,151 @@
             </div>
         </div>
     </div>
+
+    <div id="uploadProgress" class="upload-progress hide">
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                <i class="fa fa-cloud-upload" aria-hidden="true"></i> 上传进度
+            </div>
+
+            <table class="table">
+                <tbody id="progressList">
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="hide">
+        <table id="progressTemplate">
+            <tr>
+                <td>
+                    <div class="name"></div>
+                    <div class="progress">
+                        <div class="progress-bar progress-bar-success progress-bar-striped" role="progressbar"
+                             aria-valuenow="0"
+                             aria-valuemin="0"
+                             aria-valuemax="100" style="width: 0;">
+                            0%
+                        </div>
+                    </div>
+                    <div class="progress-error"></div>
+                </td>
+            </tr>
+        </table>
+    </div>
 {% endblock %}
 
 {% block js %}
-
+    <script src="{% static 'js/cos-js-sdk-v5.min.js' %}"></script>
     <script>
         var FOLDER_URL = '{% url 'file' project_id=request.saas.project.id %}'
         var FILE_DELETE_URL = '{% url 'file_delete' project_id=request.saas.project.id %}'
+        var COS_CREDENTIAL = '{% url 'cos_credential' project_id=request.saas.project.id %}'
+        var FILE_POST = "{% url 'file_post' project_id=request.tracer.project.id %}";
+        var CURRENT_FOLDER_ID = "{{ folder_object.id }}";
+        //全局获取临时凭证
+
         $(function () {
             initAddModal();
             bindModelSubmit();
             bindDeleteSubmit();
+            bindUploadFile();
         });
+
+        function bindUploadFile() {
+            //获取临时凭证(刚进页面获取一次,有效期
+            // )
+            $('#uploadFile').change(function () {
+                $('#progressList').empty();
+                var fileList = $(this)[0].files;
+                //获取本次要上传每个文件的大小&名称
+                var checkFileList = []
+                $.each(fileList, function (index, fileObject) {
+
+                    checkFileList.push({'name': fileObject.name, 'size': fileObject.size});
+                });
+                //把这些数据发送到diango后台,Django后台进行容量的校验,如果没有问题返回临时凭证,否则返回错误信息;
+                var cos_credential = new COS({
+                    getAuthorization: function (options, callback) {
+                        // 想django后台发送请求，获取临时凭证
+                        $.post(COS_CREDENTIAL, JSON.stringify(checkFileList), function (res) {
+                            if (res.status) {
+                                var credentials = res.data && res.data.credentials;
+                                if (!res.data || !credentials) return console.error('credentials invalid');
+                                callback({
+                                    TmpSecretId: credentials.tmpSecretId,
+                                    TmpSecretKey: credentials.tmpSecretKey,
+                                    XCosSecurityToken: credentials.sessionToken,
+                                    StartTime: res.data.startTime,
+                                    ExpiredTime: res.data.expiredTime,
+                                });
+                                $('#uploadProgress').removeClass('hide');
+
+                            } else {
+                                alert(res.error);
+                            }
+
+                        });
+
+                    }
+                })
+                //上传前获取临时凭证
+                $.each(fileList, function (index, fileObject) {
+                    var fileName = fileObject.name;
+                    var tr = $('#progressTemplate').find('tr').clone();
+                    tr.find('.name').text(fileName);
+                    $('#progressList').append(tr)
+                    // 上传文件(异步)
+                    cos_credential.putObject({
+                        Bucket: '{{ request.saas.project.bucket }}', /* 必须 */
+                        Region: '{{ request.saas.project.region }}',     /* 存储桶所在地域，必须字段 */
+                        Key: fileName,              /* 必须 */
+                        Body: fileObject, // 上传文件对象
+                        onProgress: function (progressData) {
+                            console.log("文件上传进度--->", fileName, JSON.stringify(progressData));
+                            var percent = progressData.percent * 100 + '%';
+                            tr.find('.progress-bar').text(percent)
+                            tr.find('.progress-bar').css('width', percent)
+                        }
+                    }, function (err, data) {
+                        console.log(err || data);
+                        if (data && data.statusCode === 200) {
+                            //上传成功,提交到后台,写入数据库
+                            $.post(FILE_POST, {
+                                name: fileName,
+                                key: key,
+                                file_size: fileSize,
+                                parent: CURRENT_FOLDER_ID,
+                                etag: data.ETag,
+                                file_path: data.Location
+                            }, function (res) {
+                                // 在数据库中写入成功，将已添加的数据在页面上动态展示。
+                                var newTr = $('#rowTpl').find('tr').clone();
+                                newTr.find('.name').text(res.data.name);
+                                newTr.find('.file_size').text(res.data.file_size);
+                                newTr.find('.username').text(res.data.username);
+                                newTr.find('.datetime').text(res.data.datetime);
+                                newTr.find('.delete').attr('data-fid', res.data.id);
+                                newTr.find('.download').attr('href', res.data.download_url);
+                                $('#rowList').append(newTr);
+
+                                // 自己的进度删除
+                                tr.remove();
+
+
+                            }
+                        else
+                            {
+                                tr.find('.progress-error').text('上传失败')
+                            }
+                        }
+                    );
+
+
+                });
+
+            });
+        }
 
         function bindDeleteSubmit() {
             //获取要删除的id
@@ -230,3 +392,4 @@
         }
     </script>
 {% endblock %}
+
