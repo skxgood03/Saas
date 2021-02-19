@@ -83,7 +83,7 @@
                     <th>操作</th>
                 </tr>
                 </thead>
-                <tbody>
+                <tbody id="rowList">
                 {% for item in file_object_list %}
                     <tr>
 
@@ -211,6 +211,30 @@
             </tr>
         </table>
     </div>
+
+    <div class="hide">
+        <table id="rowTpl">
+            <tr>
+                <td>
+                    <i class="fa fa-file" aria-hidden="true"></i>
+                    <span class="name"></span>
+                </td>
+                <td class="file_size"></td>
+                <td class="username"></td>
+                <td class="datetime"></td>
+                <td>
+
+                    <a class="btn btn-default btn-xs download">
+                        <i class="fa fa-cloud-download" aria-hidden="true"></i>
+                    </a>
+
+                    <a class="btn btn-danger btn-xs delete" data-toggle="modal" data-target="#alertModal">
+                        <i class="fa fa-trash" aria-hidden="true"></i>
+                    </a>
+                </td>
+            </tr>
+        </table>
+    </div>
 {% endblock %}
 
 {% block js %}
@@ -219,7 +243,7 @@
         var FOLDER_URL = '{% url 'file' project_id=request.saas.project.id %}'
         var FILE_DELETE_URL = '{% url 'file_delete' project_id=request.saas.project.id %}'
         var COS_CREDENTIAL = '{% url 'cos_credential' project_id=request.saas.project.id %}'
-        var FILE_POST = "{% url 'file_post' project_id=request.tracer.project.id %}";
+        var FILE_POST = "{% url 'file_post' project_id=request.saas.project.id %}";
         var CURRENT_FOLDER_ID = "{{ folder_object.id }}";
         //全局获取临时凭证
 
@@ -270,14 +294,16 @@
                 //上传前获取临时凭证
                 $.each(fileList, function (index, fileObject) {
                     var fileName = fileObject.name;
+                    var fileSize = fileObject.size;
                     var tr = $('#progressTemplate').find('tr').clone();
+                    var key = (new Date()).getTime() + "_" + fileName;
                     tr.find('.name').text(fileName);
                     $('#progressList').append(tr)
                     // 上传文件(异步)
                     cos_credential.putObject({
                         Bucket: '{{ request.saas.project.bucket }}', /* 必须 */
                         Region: '{{ request.saas.project.region }}',     /* 存储桶所在地域，必须字段 */
-                        Key: fileName,              /* 必须 */
+                        Key: key,              /* 必须 */
                         Body: fileObject, // 上传文件对象
                         onProgress: function (progressData) {
                             console.log("文件上传进度--->", fileName, JSON.stringify(progressData));
@@ -298,7 +324,7 @@
                                 file_path: data.Location
                             }, function (res) {
                                 // 在数据库中写入成功，将已添加的数据在页面上动态展示。
-                                var newTr = $('#rowTpl').find('tr').clone();
+                                var newTr = $('#rowTpl').find('tr').clone(); //克隆#rowTpl基础模板,下面从数据库获取数据添加
                                 newTr.find('.name').text(res.data.name);
                                 newTr.find('.file_size').text(res.data.file_size);
                                 newTr.find('.username').text(res.data.username);
@@ -311,13 +337,14 @@
                                 tr.remove();
 
 
-                            }
+                            })
+                        }
                         else
                             {
                                 tr.find('.progress-error').text('上传失败')
                             }
-                        }
-                    );
+                        });
+
 
 
                 });

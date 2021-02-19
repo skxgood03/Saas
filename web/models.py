@@ -112,7 +112,7 @@ class FileRepository(models.Model):
     key = models.CharField(verbose_name='文件储存在COS中的KEY', max_length=128, null=True, blank=True)
 
     # int类型最大表示的数据
-    file_size = models.IntegerField(verbose_name='文件大小', null=True, blank=True, help_text='字节')
+    file_size = models.BigIntegerField(verbose_name='文件大小', null=True, blank=True, help_text='字节')
 
     file_path = models.CharField(verbose_name='文件路径', max_length=255, null=True,
                                  blank=True)  # https://桶.cos.ap-chengdu/....
