@@ -109,7 +109,7 @@
                         <td>{{ item.update_user.name }}</td>
                         <td>{{ item.update_datetime }}</td>
                         <td>
-                            {% if item.file_type == 2 %}
+                           {% if item.file_type == 2 %}
                                 <a class="btn btn-default btn-xs"
                                    data-toggle="modal"
                                    data-target="#addModal"
@@ -117,6 +117,11 @@
                                    data-fid="{{ item.id }}"
                                    data-whatever="修改文件夹">
                                     <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
+                                </a>
+                            {% else %}
+                                <a class="btn btn-default btn-xs"
+                                   href="{% url 'file_download' project_id=request.saas.project.id file_id=item.id %}">
+                                    <i class="fa fa-cloud-download" aria-hidden="true"></i>
                                 </a>
                             {% endif %}
                             <a class="btn btn-default btn-xs"
