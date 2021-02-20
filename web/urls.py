@@ -5,6 +5,7 @@ from web.views import project
 from web.views import manage
 from web.views import wiki
 from web.views import file
+from web.views import setting
 
 urlpatterns = [
     path('register/', account.register, name='register'),
@@ -33,12 +34,15 @@ urlpatterns = [
         path('wiki/upload/', wiki.wiki_upload, name='wiki_upload'),
 
         path('statistics/', manage.statistics, name='statistics'),
-        path('setting/', manage.setting, name='setting'),
+
         path('file/', file.file, name='file'),
         path('file/delete', file.file_delete, name='file_delete'),
         path('file/post', file.file_post, name='file_post'),
         path('file/download/<int:file_id>', file.file_download, name='file_download'),
         path('cos/credential', file.cos_credential, name='cos_credential'),
+
+        path('setting/', setting.setting, name='setting'),
+        path('setting/delete', setting.setting_delete, name='setting_delete'),
 
     ], None))
 

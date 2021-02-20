@@ -1,5 +1,11 @@
 {% extends 'layout/manage.html' %}
-
+{% block css %}
+    <style>
+        .choose {
+            border-left: 2px solid #f90 !important;
+        }
+    </style>
+{% endblock %}
 {% block content %}
     <div class="container clearfix" style="margin-top: 20px;">
         <div class="col-sm-3">
@@ -12,7 +18,7 @@
                         <a href="#" class="list-group-item">我的资料</a>
                         <a href="#" class="list-group-item">修改密码</a>
                         <a href="{% url 'setting_delete'  project_id=request.saas.project.id %}"
-                           class="list-group-item">删除项目</a>
+                           class="list-group-item choose">删除项目</a>
                     </div>
                 </div>
             </div>
@@ -21,7 +27,24 @@
             <div class="panel panel-default">
                 <div class="panel-heading"><i class="fa fa-address-card-o" aria-hidden="true"></i> 我的资料</div>
                 <div class="panel-body">
-                    <h4 style="text-align: center;">系统设置</h4>
+
+                    <form class="form-horizontal" method="post">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">项目名</label>
+                            <div class="col-sm-5">
+                                <input type="text" class="form-control" placeholder="请输入项目名称" name="project_name">
+                                <span class="error-msg">{{ error }}</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-offset-2 col-sm-5">
+                                <input type="submit" class="btn btn-danger" value="删 除">
+                            </div>
+                        </div>
+
+                    </form>
+
                 </div>
             </div>
 
