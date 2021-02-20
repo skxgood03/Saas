@@ -6,6 +6,7 @@ from web.views import manage
 from web.views import wiki
 from web.views import file
 from web.views import setting
+from web.views import issues
 
 urlpatterns = [
     path('register/', account.register, name='register'),
@@ -24,7 +25,6 @@ urlpatterns = [
     # 项目管理(路由分发)
     path('manage/<int:project_id>/', include([
         path('dashboard/', manage.dashboard, name='dashboard'),
-        path('issues/', manage.issues, name='issues'),
 
         path('wiki/', wiki.wiki, name='wiki'),
         path('wiki/add/', wiki.wiki_add, name='wiki_add'),
@@ -43,6 +43,7 @@ urlpatterns = [
 
         path('setting/', setting.setting, name='setting'),
         path('setting/delete', setting.setting_delete, name='setting_delete'),
+        path('issues/', issues.issues, name='issues'),
 
     ], None))
 
