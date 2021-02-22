@@ -41,6 +41,11 @@ class IssuesModelForm(Bootstrap,forms.ModelForm):
         self.fields['parent'].choices = parent_list
 
 
+class IssuesReplModelFrom(forms.ModelForm):
+    class Meta:
+        model = IssuesReply
+        fields = ['content','reply']
+
 
 
 
