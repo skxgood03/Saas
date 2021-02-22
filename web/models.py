@@ -5,6 +5,9 @@ class UserInfo(models.Model):
     phone = models.CharField(verbose_name='手机号',max_length=32)
     pwd = models.CharField(verbose_name='密码',max_length=32)
 
+    def __str__(self):
+        return self.name
+
 class PricePolicy(models.Model):
     """ 价格策略 """
     category_choices = (

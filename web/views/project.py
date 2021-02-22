@@ -49,7 +49,12 @@ def project_list(request):
         # 验证通过:项目名,颜色,描述+creator谁创建的项目
         form.instance.creator = request.saas.user
         # 创建项目
-        form.save()
+        instance = form.save()
+        #3.项目初始化问题类型
+        issues_type_object_list = []
+        for item in IssuesType.PROJECT_INIT_LIST:
+            issues_type_object_list.append(IssuesType(project=instance,title=item))
+        IssuesType.objects.bulk_create(issues_type_object_list) #批量增加
         return JsonResponse({'status': True})
 
     return JsonResponse({'status': False, 'error': form.errors})
