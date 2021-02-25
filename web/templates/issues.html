@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="{% static 'plugin/Marked/css/editormd.min.css' %}">
     <link rel="stylesheet" href="{% static 'plugin/dist/css/bootstrap-datepicker.min.css' %}">
     <link rel="stylesheet" href="{% static 'plugin/bootstrap-select/css/bootstrap-select.min.css' %}">
+    <link rel="stylesheet" href="{% static 'plugin/select2/css/select2.min.css' %}">
     <style>
         .issues-list .number {
             width: 100px;
@@ -111,12 +112,12 @@
                             <td class="number">
                                 <i class="fa fa-circle text-{{ item.priority }}"></i>
                                 <a target="_blank"
-                                   href="{% url 'issues_detail' project_id=request.tracer.project.id issues_id=item.id %}">{% string_just item.id %}</a>
+                                   href="{% url 'issues_detail' project_id=request.saas.project.id issues_id=item.id %}">{% string_just item.id %}</a>
                             </td>
                             <td class="issue">
                                 <div>
                                     <a target="_blank"
-                                       href="{% url 'issues_detail' project_id=request.tracer.project.id issues_id=item.id %}">{{ item.subject }}</a>
+                                       href="{% url 'issues_detail' project_id=request.saas.project.id issues_id=item.id %}">{{ item.subject }}</a>
                                 </div>
                                 <div class="tags">
                                     <span class="type">
@@ -129,13 +130,13 @@
                                     {% if item.assign %}
                                         <span>
                                         <i class="fa fa-hand-o-right" aria-hidden="true"></i>
-                                        {{ item.assign.username }}
+                                        {{ item.assign.name }}
                                     </span>
                                     {% endif %}
 
                                     <span>
                                         <i class="fa fa-user-o" aria-hidden="true"></i>
-                                        {{ item.creator.username }}
+                                        {{ item.creator.name }}
                                     </span>
                                     {% if item.end_date %}
                                         <span><i class="fa fa-calendar"
@@ -335,6 +336,47 @@
             </div>
         </div>
     </div>
+    <div class="modal fade in" id="inviteModal" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">邀请成员</h4>
+                </div>
+                <div class="modal-body" style="padding-right: 40px;">
+                    <form id="inviteForm">
+                        {% csrf_token %}
+                        {% for item in invite_form %}
+                            <div class="form-group">
+                                <label for="{{ item.id_for_label }}">{{ item.label }}</label>
+                                <span>{% if  item.help_text %}（{{ item.help_text }}）{% endif %}</span>
+                                {{ item }}
+                                <span class="error-msg"></span>
+                            </div>
+                        {% endfor %}
+                        <button type="button" class="btn btn-success" id="btnGenInviteCode">生成邀请码</button>
+                    </form>
+                    <div id="inviteArea" class="hide">
+                        <hr/>
+                        <div class="form-group">
+                            <div class="input-group">
+                                <div class="input-group-btn">
+                                    <input type="button" value="邀请链接" class="btn btn-default">
+                                </div>
+                                <input type="text" class="form-control" id="inviteUrl">
+                                <div class="input-group-btn">
+                                    <input type="button" value="复制链接" class="btn btn-primary" id="btnCopyUrl">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
 
 {% endblock %}
 {% block js %}
@@ -344,18 +386,86 @@
     <script src='{% static 'plugin/dist/locales/bootstrap-datepicker.zh-CN.min.js' %}'></script>
     <script src='{% static 'plugin/bootstrap-select/js/bootstrap-select.min.js' %}'></script>
     <script src='{% static 'plugin/bootstrap-select/js/i18n/defaults-zh_CN.min.js' %}'></script>
+    <script src='{% static 'plugin/select2/js/i18n/zh-CN.js' %}'></script>
+    <script src='{% static 'plugin/select2/js/select2.min.js' %}'></script>
     <script>
         var WIKI_UPLOAO_URL = '{% url 'wiki_upload' project_id=request.saas.project.id %}'
         var POST_ISSUES = '{% url 'issues' project_id=request.saas.project.id %}'
+        var INVITE_URL = '{% url 'invite_url' project_id=request.saas.project.id %}'
         $(function () {
-            bindBootStrapShownEvent();
+            bindBootStrapShownEvent()
             initDatePicker();
             bindAddSubmit();
+
+            bindClickCheckFilter();
+
+            initSelect2();
+
+            bindCreateInviteCode();
+            bindCopyUrl();
         })
 
         /*
-添加对话框：初始化时间选择
+点击拷贝邀请码
+*/
+        function bindCopyUrl() {
+            $('#btnCopyUrl').click(function () {
+                var textInput = $('#inviteUrl')[0]; // document.getElementById('inviteUrl')
+                textInput.select();
+
+                document.execCommand("Copy");
+                alert('复制成功');
+            })
+        }
+
+        /*
+点击生成要请链接
  */
+        function bindCreateInviteCode() {
+            $('#btnGenInviteCode').click(function () {
+                $('.error-msg').empty();
+                $.ajax({
+                    url: INVITE_URL,
+                    type: "POST",
+                    data: $('#inviteForm').serialize(),
+                    dataType: "JSON",
+                    success: function (res) {
+                        if (res.status) {
+                            $('#inviteArea').removeClass('hide').find('#inviteUrl').val(res.data);
+                        } else {
+                            $.each(res.error, function (k, v) {
+                                $('#id_' + k).next('.error-msg').text(v[0]);
+                            })
+                        }
+                    }
+                })
+            })
+        }
+
+        function initSelect2() {
+            $('.select2').select2({}).on('select2:select', function (e) {
+                //选中某一项触发
+                location.href = e.params.data.id;
+            }).on('select2:unselect', function () {
+                //移除选中触发
+                location.href = e.params.data.id;
+            });
+        }
+
+        /*
+        点击筛选的checkbox
+        */
+        function bindClickCheckFilter() {
+            $('.filter-area').find(':checkbox').click(
+                function () {
+                    location.href = $(this).parent().attr('href')
+                }
+            )
+        }
+
+        /*
+        添加对话框：初始化时间选择
+         */
         function initDatePicker() {
 
             $('#id_start_date,#id_end_date').datepicker({
@@ -369,47 +479,46 @@
         function bindBootStrapShownEvent() {
             $('#addModal').on('shown.bs.modal', function (event) {
                 // 对话框弹出时，内容触发。
-                initEditorMd();
+
+                initEdtorMd()
             })
         }
 
         /*
-        初始化markdown编译器(textre转换为编译器)
+        初始化markdown编辑器（textare转换为编辑器）
          */
-        function initEdtorMd() {
-            editormd('editor', {
-                placeholder: '请输入内容',
-                height: 500,
-                path: '{% static 'plugin/Marked/lib/' %}',
-                imageUpload: true,
-                imageFormats: ['jpg', 'jpeg', 'png', 'gif'],
-                imageUploadURL: WIKI_UPLOAO_URL
+         function initEdtorMd() {
+            editormd('editor',{
+                placeholder:'请输入内容',
+                height:300,
+                path:'{% static 'plugin/Marked/lib/' %}',
+                imageUpload:true,
+                imageFormats:['jpg','jpeg','png','gif'],
+                imageUploadURL:WIKI_UPLOAO_URL
             })
 
         }
 
         function bindAddSubmit() {
-
             $('#btnAddSubmit').click(function () {
                 $("#addForm").find('.error-msg').empty();
                 $.ajax({
                     url: POST_ISSUES,
                     type: "POST",
-                    dada: $('#addForm').serialize(),
+                    data: $('#addForm').serialize(),
                     dataType: "JSON",
                     success: function (res) {
-                        if (res.status){
-                            location.href= location.href
-                        }else {
-                            //错误信息
-                             $.each(res.error, function (k, v) {
-                                $('#id_' + k).next('.error-msg').text(v[0]);
+                        if (res.status) {
+                            location.href = location.href;
+                        } else {
+                            // 错误信息
+                            $.each(res.error, function (k, v) {
+                                $('#id_' + k).parent().next('.error-msg').text(v[0]);
                             })
-
                         }
                     }
                 })
-            })
+            });
         }
     </script>
 {% endblock %}

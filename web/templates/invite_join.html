@@ -1,0 +1,29 @@
+{% extends 'layout/manage.html' %}
+
+{% block title %}加入项目{% endblock %}
+
+{% block css %}
+    <style>
+        .no-radius {
+            border-radius: 0;
+            text-align: center;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div>
+        {% if error %}
+            <div class="alert alert-danger no-radius">
+                <h4><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> {{ error }}</h4>
+            </div>
+        {% else %}
+            <div class="alert alert-success no-radius">
+                <h4><i class="fa fa-check-circle" aria-hidden="true"></i> 加入成功 </h4>
+                <a href="{% url 'dashboard' project_id=project.id %}">点击跳转至项目</a>
+            </div>
+        {% endif %}
+
+    </div>
+
+{% endblock %}

@@ -46,6 +46,11 @@ class IssuesReplModelFrom(forms.ModelForm):
         model = IssuesReply
         fields = ['content','reply']
 
+class InviteModelForm(Bootstrap,forms.ModelForm):
+    class Meta:
+        model = ProjectInvite
+        fields = ['period','count'] #想要展示的字段
+
 
 
 
