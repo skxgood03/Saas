@@ -1,5 +1,192 @@
 {% extends 'layout/manage.html' %}
+{% load dashboard %}
+{% load issues %}
 
+{% block css %}
+    <style>
+        .table-right > tbody > tr > td.label-left {
+            width: 90px;
+        }
+
+        .table-right > tbody > tr > td {
+            border: 0;
+        }
+
+        .status-count {
+            text-align: center;
+            margin-top: 10px;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .status-count .count {
+            font-size: 25px;
+        }
+
+        .status-count a {
+            text-decoration: none;
+        }
+
+        .user-item .title {
+            margin-bottom: 20px;
+        }
+
+        .user-item .avatar, .top-10 .avatar {
+            float: left;
+            margin-right: 10px;
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            background-color: #304659;
+            color: white;
+            text-align: center;
+            line-height: 30px;
+            border-radius: 50%;
+        }
+
+        .user-item .text {
+            line-height: 30px;
+        }
+
+        .top-10 .avatar {
+            margin-right: 0;
+        }
+
+        .top-10 td {
+            padding: 5px 10px;
+        }
+
+        .top-10 .table > tbody > tr > td {
+            border-top: 0;
+            border-bottom: 1px solid #ddd;
+        }
+    </style>
+{% endblock %}
 {% block content %}
-    <h1>概揽</h1>
+    <div class="container-fluid" style="margin-top: 20px">
+        <div class="row">
+            <div class="col-md-8">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <i class="fa fa-bar-chart" aria-hidden="true"></i>
+                        新增问题趋势
+                    </div>
+                    <div class="panel-body">
+                        <div id="chart" style="width:100%;min-height:200px"></div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <i class="fa fa-quora" aria-hidden="true"></i>
+                                问题
+                            </div>
+                            <div class="panel-body">
+                                {% for key,item in status_dict.items %}
+                                    <div class="col-sm-4 status-count">
+                                        <a href="{% url 'issues' project_id=request.saas.project.id %}?status={{ key }}">
+                                            <div class="count">{{ item.count }}</div>
+                                            <div>{{ item.text }}</div>
+                                        </a>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <i class="fa fa-user" aria-hidden="true"></i>
+                                项目成员
+                            </div>
+                            <div class="panel-body user-item">
+                                <div class="col-sm-12 title">创建者</div>
+                                <div class="clearfix" style="margin-bottom: 30px;">
+                                    <div class="col-sm-4">
+                                        <div class="avatar">{{ request.saas.project.creator.name.0|upper }}</div>
+                                        <div class="text">{{ request.saas.project.creator.name }}</div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-12 title">参与者</div>
+                                <div>
+                                    {% for item in user_list %}
+                                        <div class="col-sm-4">
+                                            <div class="avatar">{{ item.user__name.0|upper }}</div>
+                                            <div class="text">{{ item.user__name }}</div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <i class="fa fa-cog title-icon"></i>
+                        详细
+                    </div>
+                    <div class="panel-body">
+                        <table class="table table-right">
+                            <tbody>
+                            <tr>
+                                <td class="label-left">项目名称 ：</td>
+                                <td>{{ request.saas.project.name }}</td>
+                            </tr>
+                            <tr>
+                                <td class="label-left">项目描述 ：</td>
+                                <td>{{ request.saas.project.desc }}</td>
+                            </tr>
+                            <tr>
+                                <td class="label-left">创建时间 ：</td>
+                                <td>{{ request.saas.project.create_datetime }}</td>
+                            </tr>
+                            <tr>
+                                <td class="label-left">项目空间 ：</td>
+                                <td> {% user_space request.saas.project.use_space %}
+                                    / {{ request.saas.price_policy.project_space }} GB
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <i class="fa fa-list-ul" aria-hidden="true"></i>
+                        动态
+                    </div>
+                    <div class="panel-body top-10">
+                        <table class="table">
+                            <tbody>
+                            {% for item in top_ten_object %}
+                                <tr>
+                                    <td style="width: 46px;">
+                                        <div class="avatar">{{ item.creator.name.0|upper }}</div>
+                                    </td>
+                                    <td>
+                                        <div>{{ item.creator.name }}</div>
+                                        <div>指派
+                                            <a href="{% url 'issues_detail' project_id=request.saas.project.id issues_id=item.id %}">{% string_just item.id %}</a>
+                                            给 {{ item.assign.name }}
+                                        </div>
+                                    </td>
+                                    <td style="width: 156px;">
+                                        {{ item.create_datetime }}
+                                    </td>
+                                </tr>
+
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
 {% endblock %}

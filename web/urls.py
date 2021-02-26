@@ -7,6 +7,7 @@ from web.views import wiki
 from web.views import file
 from web.views import setting
 from web.views import issues
+from web.views import dashboard
 
 urlpatterns = [
     path('register/', account.register, name='register'),
@@ -24,7 +25,7 @@ urlpatterns = [
     path('project/unstar/<str:project_type>/<int:project_id>/', project.project_unstar, name='project_unstar'),
     # 项目管理(路由分发)
     path('manage/<int:project_id>/', include([
-        path('dashboard/', manage.dashboard, name='dashboard'),
+
 
         path('wiki/', wiki.wiki, name='wiki'),
         path('wiki/add/', wiki.wiki_add, name='wiki_add'),
@@ -48,7 +49,7 @@ urlpatterns = [
         path('issues/record/<int:issues_id>', issues.issues_record, name='issues_record'),
         path('issues/change/<int:issues_id>', issues.issues_change, name='issues_change'),
         path('issues/invite/url', issues.invite_url, name='invite_url'),
-
+        path('dashboard/',dashboard.dashboard,name = 'dashboard')
     ], None)),
     path('invite/join/<str:code>',issues.invite_join,name= 'invite_join')
 

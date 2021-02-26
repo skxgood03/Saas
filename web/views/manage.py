@@ -1,7 +1,5 @@
 #项目管理
 from django.shortcuts import *
-def dashboard(request,project_id):
-    return render(request,'dashboard.html')
 
 
 
