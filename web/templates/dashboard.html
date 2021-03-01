@@ -72,7 +72,7 @@
                         新增问题趋势
                     </div>
                     <div class="panel-body">
-                        <div id="chart" style="width:100%;min-height:200px"></div>
+                        <div id="chart" style="width:100%;min-height:350px"></div>
                     </div>
                 </div>
                 <div class="row">
@@ -189,4 +189,71 @@
     </div>
 
 
+{% endblock %}
+
+{% block js %}
+    {#     Highcharts#}
+    <script src="http://cdn.highcharts.com.cn/highcharts/9.0.1/highcharts.js"></script>
+    <script>
+        $(function () {
+            initChart();
+        })
+
+        function initChart() {
+            //chart
+            var config = {
+                title: {
+                    text: null   // 不显示标题
+                },
+                legend: {
+                    enabled: false // 关闭图例提示
+                },
+                credits: {
+                    enabled: false // 关闭版权信息
+                },
+                yAxis: {
+                    title: {
+                        text: '问题数量' // Y周文本提示
+                    }
+                },
+                xAxis: {
+                    type: 'datetime',
+                    tickInterval: 60 * 60 * 24 * 1000,
+                    labels: {
+                        formatter: function () {
+                            return Highcharts.dateFormat('%m-%d', this.value);
+                        },
+                        rotation: -30
+                    }
+                },
+                tooltip: {
+                    headerFormat: '<b>{point.key}</b><br>',
+                    pointFormat: '<span style="color:{series.color}">\u25CF</span> 数量: {point.y} ',
+                    xDateFormat: '%Y-%m-%d',
+                },
+                plotOptions: {
+                    area: {
+                        stacking: 'normal',
+                        lineColor: '#666666',
+                        lineWidth: 1,
+                        marker: {
+                            lineWidth: 1,
+                            lineColor: '#666666'
+                        }
+                    }
+                },
+                series: [{
+                    data: []
+                }]
+            };
+
+            $.ajax({
+                url:'...',
+                success:function (res) {
+                    config.series = re.data;
+                    var chart = Highcharts.chart('chart',config );
+                }
+            })
+        }
+    </script>
 {% endblock %}
