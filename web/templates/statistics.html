@@ -82,6 +82,7 @@
                 //选择时间后，函数自动被触发
 
                 priority(start.format('YYYY-MM-DD'), end.add(1, 'days').format('YYYY-MM-DD'))
+                projectUser(start.format('YYYY-MM-DD'), end.add(1, 'days').format('YYYY-MM-DD'))
 
             });
         }
@@ -190,7 +191,7 @@
             };
 
             $.ajax({
-                url:xxx,
+                url:PRIORITY_USER_API,
                 type:'GET',
                 data:{start:start,end:end},
                 dataType:'JSON',
