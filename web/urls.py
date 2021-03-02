@@ -47,6 +47,8 @@ urlpatterns = [
         path('dashboard/', dashboard.dashboard, name='dashboard'),
         path('dashboard/issues/chart', dashboard.issues_chart, name='issues_chart'),
         path('statistics/', statistics.statistics, name='statistics'),
+        path('statistics/priority', statistics.statistics_priority, name='statistics_priority'),
+        path('statistics/project/user', statistics.statistics_project_user, name='statistics_project_user'),
     ], None)),
     path('invite/join/<str:code>', issues.invite_join, name='invite_join')
 
