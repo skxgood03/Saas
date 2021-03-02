@@ -60,6 +60,7 @@
             border-top: 0;
             border-bottom: 1px solid #ddd;
         }
+
     </style>
 {% endblock %}
 {% block content %}
@@ -72,7 +73,7 @@
                         新增问题趋势
                     </div>
                     <div class="panel-body">
-                        <div id="chart" style="width:100%;min-height:350px"></div>
+                        <div id="chart" style="width:100%;min-height:345px"></div>
                     </div>
                 </div>
                 <div class="row">
@@ -130,7 +131,7 @@
                         详细
                     </div>
                     <div class="panel-body">
-                        <table class="table table-right">
+                        <table class="table table-right" style="min-height: 200px">
                             <tbody>
                             <tr>
                                 <td class="label-left">项目名称 ：</td>
@@ -192,9 +193,17 @@
 {% endblock %}
 
 {% block js %}
+
     {#     Highcharts#}
     <script src="http://cdn.highcharts.com.cn/highcharts/9.0.1/highcharts.js"></script>
     <script>
+        var INITCHART = "{% url 'issues_chart' project_id=request.saas.project.id %}"
+        //关闭ｕｔｃ时间，默认使用东吧区时间
+        Highcharts.setOptions({
+            global: {
+                useUTC: false
+            }
+        });
         $(function () {
             initChart();
         })
@@ -248,10 +257,12 @@
             };
 
             $.ajax({
-                url:'...',
-                success:function (res) {
-                    config.series = re.data;
-                    var chart = Highcharts.chart('chart',config );
+                url: INITCHART,
+                type: "GET",
+                dataType: "JSON",
+                success: function (res) {
+                    config.series[0].data = res.data;
+                    var chart = Highcharts.chart('chart', config);
                 }
             })
         }

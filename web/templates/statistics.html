@@ -1,5 +1,98 @@
 {% extends 'layout/manage.html' %}
-
+{% load static %}
+{% block css %}
+    <link rel="stylesheet" href="{% static 'plugin/daterangepicker/daterangepicker.css' %}">
+{% endblock %}
 {% block content %}
-    <h1>统计</h1>
+    <div class="container-fluid" style="margin-top: 20px;">
+        <div>
+            <div class="input-group" style="width: 300px;">
+                <span class="input-group-addon">日期范围</span>
+                <input id="rangePicker" type="text" class="form-control">
+            </div>
+        </div>
+
+        <div class="row" style="margin-top: 20px;">
+            <div class="col-md-8">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <i class="fa fa-bar-chart" aria-hidden="true"></i> 人员工作进度
+                    </div>
+                    <div class="panel-body">
+                        <div id="projectUser" style="height: 300px;"></div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="col-md-4">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <i class="fa fa-pie-chart" aria-hidden="true"></i> 优先级统计
+                    </div>
+                    <div class="panel-body">
+                        <div id="priority" style="height: 300px;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block js %}
+    <script src="{% static 'plugin/daterangepicker/moment.min.js' %}"></script>
+    <script src="{% static 'plugin/daterangepicker/daterangepicker.js' %}"></script>
+    <script src="http://cdn.highcharts.com.cn/highcharts/9.0.1/highcharts.js"></script>
+
+    <script>
+        $(function () {
+            initDateRangePicker();
+        });
+
+        function initDateRangePicker() {
+            var option = {
+                maxDate: moment(),
+                alwaysShowCalendars: true,
+                showWeekNumbers: true,
+                ranges: {
+                    '今天': [moment(), moment()],
+                    '昨天': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+                    '最近7天': [moment().subtract(6, 'days'), moment()],
+                    '最近30天': [moment().subtract(29, 'days'), moment()],
+                    '本月': [moment().startOf('month'), moment().endOf('month')]
+                },
+                locale: {
+                    format: 'YYYY-MM-DD',
+                    separator: ' 至 ',
+                    applyLabel: '确定',
+                    cancelLabel: '取消',
+                    fromLabel: '开始',
+                    toLabel: '结束',
+                    customRangeLabel: '自定义',
+                    weekLabel: 'W',
+                    daysOfWeek: ['一', '二', '三', '四', '五', '六', '日'],
+                    monthNames: ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'],
+                    firstDay: 1
+                }
+            };
+            $('#rangePicker').daterangepicker(option, function (start, end, label) {
+                //选择时间后，函数自动被触发
+                console.log(start, end)
+
+            });
+        }
+
+        function priority(start, end) {
+            var config = {}
+            $.ajax({
+                url: xxx,
+                type: "GET",
+                data: {start: start, end: end},
+                success: function (res) {
+                    config.series[0].data = res.data;
+                    Highcharts.chart('priority', config);
+                }
+
+            })
+
+        }
+    </script>
 {% endblock %}
