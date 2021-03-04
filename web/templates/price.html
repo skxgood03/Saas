@@ -1,0 +1,255 @@
+{% extends 'layout/basic.html' %}
+{% load static %}
+{% block title %}套餐{% endblock %}
+
+{% block css %}
+    <link rel="stylesheet" href="{% static 'css/translateelement.css' %}">
+    <style>
+        /*头部色块定义*/
+        .l-blush {
+            background: linear-gradient(45deg, #dd5e89, #f7bb97) !important;
+            color: #fff !important
+        }
+
+        .l-slategray {
+            background: linear-gradient(45deg, #708090, #7c8ea0) !important;
+            color: #fff !important
+        }
+
+        .pricing {
+            display: -webkit-flex;
+            display: flex;
+            -webkit-flex-wrap: wrap;
+            flex-wrap: wrap;
+            -webkit-justify-content: center;
+            justify-content: center;
+            width: 100%;
+            margin: 0 auto 3em
+        }
+
+        .pricing-item {
+            position: relative;
+            display: -webkit-flex;
+            display: flex;
+            -webkit-flex-direction: column;
+            flex-direction: column;
+            -webkit-align-items: stretch;
+            align-items: stretch;
+            text-align: center;
+            -webkit-flex: 0 1 350px;
+            flex: 0 1 350px
+        }
+
+        .pricing-action {
+            color: inherit;
+            border: none;
+        }
+
+        .pricing-action:focus {
+            outline: none
+        }
+
+        .pricing-palden .pricing-item {
+            cursor: default;
+            background: #fff;
+            box-shadow: 0 0 10px rgba(46, 59, 125, 0.23);
+            border-radius: 20px 20px 10px 10px;
+            margin: 1em
+        }
+
+        .pricing-palden .pricing-item:hover .deco-layer--1 {
+            -webkit-transform: translate3d(15px, 0, 0);
+            transform: translate3d(15px, 0, 0)
+        }
+
+        .pricing-palden .pricing-item:hover .deco-layer--2 {
+            -webkit-transform: translate3d(-15px, 0, 0);
+            transform: translate3d(-15px, 0, 0)
+        }
+
+        .pricing-palden .pricing-item .pricing-deco {
+            border-radius: 10px 10px 0 0;
+            padding: 50px 0 160px;
+            position: relative
+        }
+
+        .pricing-palden .pricing-item .pricing-deco .pricing-deco-img {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 160px
+        }
+
+        .pricing-palden .pricing-item .pricing-deco .deco-layer {
+            -webkit-transition: -webkit-transform 0.5s;
+            transition: transform 0.5s
+        }
+
+        .pricing-palden .pricing-item .pricing-deco .pricing-title {
+            font-size: 18px;
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #fff
+        }
+
+        .pricing-palden .pricing-item .pricing-deco .pricing-price {
+            font-size: 5em;
+            font-weight: bold;
+            padding: 0;
+            color: #fff;
+            margin: 0 0 0.25em 0;
+            line-height: 0.75
+        }
+
+        .pricing-palden .pricing-item .pricing-deco .pricing-price .pricing-currency {
+            font-size: 15px;
+            vertical-align: top
+        }
+
+        .pricing-palden .pricing-item .pricing-deco .pricing-price .pricing-period {
+            font-size: 15px;
+            padding: 0 0 0 0.5em;
+            font-style: italic
+        }
+
+        .pricing-palden .pricing-item .feature-list {
+            margin: 0;
+            padding: 0.25em 0 2.5em;
+            list-style: none;
+            text-align: center
+        }
+
+        .pricing-palden .pricing-item .feature-list li {
+            padding: 10px 0
+        }
+
+        .pricing-palden .pricing-action {
+            font-weight: bold;
+            margin: auto 3em 2em 3em;
+            padding: 1em 2em;
+            color: #fff;
+            border-radius: 30px;
+            -webkit-transition: background-color 0.3s;
+            transition: background-color 0.3s
+        }
+
+        .pricing-palden .pricing-item {
+            margin: 1em -0.5em
+        }
+
+        .pricing-palden .pricing__item--featured {
+            margin: 0;
+            z-index: 10;
+            box-shadow: 0 0 20px rgba(46, 59, 125, 0.23)
+        }
+
+        /*小屏幕宽100%*/
+        @media screen and (max-width: 767px) {
+            .pricing-palden .pricing-item {
+                flex: 0 1 100%;
+                margin: 15px 0
+            }
+        }
+
+        .list-group-item {
+            border: 0 solid #ddd;
+            width: 185px;
+            /* text-align: center; */
+            /* padding-left: 10px; */
+            left: 86px;
+        }
+
+        /*重叠位置css*/
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div class="pricing pricing-palden">
+        {% for item in policy_list %}
+            <div class="pricing-item pricing__item--featured">
+
+                <div class="pricing-deco l-blush">
+                    <svg class="pricing-deco-img" enable-background="new 0 0 300 100" height="100px" id="Layer_1"
+                         preserveAspectRatio="none"
+                         version="1.1" viewBox="0 0 300 100" width="300px" x="0px" xml:space="preserve"
+                         xmlns:xlink="http://www.w3.org/1999/xlink"
+                         xmlns="http://www.w3.org/2000/svg" y="0px">
+						<path class="deco-layer deco-layer--1" d="M30.913,43.944c0,0,42.911-34.464,87.51-14.191c77.31,35.14,113.304-1.952,146.638-4.729
+	c48.654-4.056,69.94,16.218,69.94,16.218v54.396H30.913V43.944z"
+                              fill="#FFFFFF" opacity="0.6"></path>
+                        <path class="deco-layer deco-layer--2" d="M-35.667,44.628c0,0,42.91-34.463,87.51-14.191c77.31,35.141,113.304-1.952,146.639-4.729
+	c48.653-4.055,69.939,16.218,69.939,16.218v54.396H-35.667V44.628z"
+                              fill="#FFFFFF" opacity="0.6"></path>
+                        <path class="deco-layer deco-layer--3" d="M43.415,98.342c0,0,48.283-68.927,109.133-68.927c65.886,0,97.983,67.914,97.983,67.914v3.716
+	H42.401L43.415,98.342z"
+                              fill="#FFFFFF" opacity="0.7"></path>
+                        <path class="deco-layer deco-layer--4" d="M-34.667,62.998c0,0,56-45.667,120.316-27.839C167.484,57.842,197,41.332,232.286,30.428
+	c53.07-16.399,104.047,36.903,104.047,36.903l1.333,36.667l-372-2.954L-34.667,62.998z"
+                              fill="#FFFFFF"></path>
+					</svg>
+                    <div class="pricing-price"><span class="pricing-currency">
+							<font style="vertical-align: inherit;">
+								<font style="vertical-align: inherit;">$</font>
+							</font>
+						</span>
+                        <font style="vertical-align: inherit;">
+                            <font style="vertical-align: inherit;"> {{ item.price }} </font>
+                        </font><span class="pricing-period">
+							<font style="vertical-align: inherit;">
+								<font style="vertical-align: inherit;">/年</font>
+							</font>
+						</span>
+                    </div>
+                    <h3 class="pricing-title">
+                        <font style="vertical-align: inherit;">
+                            <font style="vertical-align: inherit;">{{ item.title }}</font>
+                        </font>
+                    </h3>
+                </div>
+                <form class="form-inline" method="get" action="{% url 'payment' policy_id=item.id %}">
+                    <ul class="feature-list">
+                        <li>
+                            <font style="vertical-align: inherit;">
+                                <font style="vertical-align: inherit;">最大项目数量：{{ item.project_space }}</font>
+                            </font>
+                        </li>
+                        <li>
+                            <font style="vertical-align: inherit;">
+                                <font style="vertical-align: inherit;">最大项目空间：{{ item.project_num }}Ｇ</font>
+                            </font>
+                        </li>
+                        <li>
+                            <font style="vertical-align: inherit;">
+                                <font style="vertical-align: inherit;">最大文件支持：{{ item.per_file_size }}Ｍ</font>
+                            </font>
+                        </li>
+                        <li>
+                            <font style="vertical-align: inherit;">
+                                <font style="vertical-align: inherit;">项目成员：{{ item.project_member }}</font>
+                            </font>
+                        </li>
+                        <li class="list-group-item">
+
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <div class="input-group-addon">数量</div>
+                                    <input type="number" name="number" value="1" class="form-control"
+                                           placeholder="购买数量">
+                                </div>
+                            </div>
+
+                        </li>
+                    </ul>
+                    <button class="pricing-action l-slategray">
+                        <font style="vertical-align: inherit;">
+                            <font style="vertical-align: inherit;">选择计划</font>
+                        </font>
+                    </button>
+                </form>
+            </div>
+        {% endfor %}
+    </div>
+
+{% endblock %}

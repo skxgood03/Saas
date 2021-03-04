@@ -83,7 +83,7 @@ DATABASES = {
         'NAME': 'SaaS',
         'USER': 'root',
         'PASSWORD': '123456',
-        'HOST': '192.168.41.128',
+        'HOST': '127.0.0.1',
         'PORT': '3306',
     }
 }
@@ -153,8 +153,9 @@ WHITE_REGEX_URL_LIST = [
     '/send/sms/',
     '/login/',
     '/image_code/',
-    '/index/',
+    '',
     '/login/sms/',
+    '/price/',
 
 ]
 

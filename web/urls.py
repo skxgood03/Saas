@@ -17,6 +17,8 @@ urlpatterns = [
     path('loginout/', account.loginout, name='loginout'),
     path('image_code/', account.image_code, name='image_code'),
     path('', home.index, name='index'),
+    path('price/', home.price, name='price'),
+    path('payment/<int:policy_id>', home.payment, name='payment'),
     # 项目列表
     path('project/list/', project.project_list, name='project_list'),
     # project/star/my/1

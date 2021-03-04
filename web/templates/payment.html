@@ -1,0 +1,43 @@
+{% extends 'layout/basic.html' %}
+{% load static %}
+{% block title %} 订单 {% endblock %}
+
+{% block content %}
+
+    <div class="container">
+        <h2>订单信息（30分钟失效）</h2>
+        <table class="table">
+            <thead>
+            <tr>
+                <th>订单</th>
+                <th>单价</th>
+                <th>数量</th>
+                <th>原价</th>
+                <th>原订单抵扣</th>
+                <th>实际支付</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>{{ policy_object.title }}</td>
+                <td>¥{{ policy_object.price }}</td>
+                <td>{{ number }}</td>
+                <td>¥{{ origin_price }}</td>
+                <td>¥{{ balance }}</td>
+                <td>¥{{ total_price }}</td>
+            </tr>
+            </tbody>
+        </table>
+        {% if transaction %}
+            <div class="alert alert-warning">
+                <div>原订单抵扣：¥{{ balance }}</div>
+                <div style="margin-top: 10px">
+                    原订单的时间为 {{ transaction.start_datetime }}
+                    ~ {{ transaction.end_datetime }}，且实际支付¥{{ transaction.price }}
+                </div>
+            </div>
+        {% endif %}
+        <a class="btn btn-primary" href="#">立即支付</a>
+    </div>
+
+{% endblock %}
