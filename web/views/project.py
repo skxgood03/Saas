@@ -21,6 +21,7 @@ def project_list(request):
         project_dict = {'star': [], 'my': [], 'join': []}
         my_project_list = Project.objects.filter(creator=request.saas.user)
         for row in my_project_list:
+
             if row.star:
                 project_dict['star'].append({'value': row, 'type': 'my'})
             else:
@@ -30,8 +31,7 @@ def project_list(request):
             if item.star:
                 project_dict['star'].append({'value': item.project, 'type': 'join'})
             else:
-
-                project_dict['my'].append(item.project)
+                project_dict['join'].append(item.project)
 
         form = ProjectMOdelFrom(request)
         return render(request, 'project_list.html', {'form': form, 'project_dict': project_dict})
@@ -67,7 +67,7 @@ def project_star(request, project_type, project_id):
         return redirect(reverse('project_list'))
 
     if project_type == 'join':
-        ProjectUser.objects.filter(id=project_id, creator=request.saas.user).update(star=True)
+        ProjectUser.objects.filter(project_id=project_id, user=request.saas.user).update(star=True)
         return redirect(reverse('project_list'))
     return HttpResponse('sss')
 
@@ -79,6 +79,6 @@ def project_unstar(request, project_type, project_id):
         return redirect(reverse('project_list'))
 
     if project_type == 'join':
-        ProjectUser.objects.filter(id=project_id, creator=request.saas.user).update(star=False)
+        ProjectUser.objects.filter(project_id=project_id, user=request.saas.user).update(star=False)
         return redirect(reverse('project_list'))
     return HttpResponse('sss')

@@ -13,6 +13,7 @@ def all_project_list(request):
     join_Project_list=ProjectUser.objects.filter(user=request.saas.user)
     return {'my':my_Project_list,'join':join_Project_list,'request':request}
 
+#通用菜单选项
 @register.inclusion_tag('inclusion/manage_menu_list.html')
 def manage_menu_list(requerst):
     data_list = [

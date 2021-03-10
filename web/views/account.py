@@ -45,7 +45,6 @@ def send_sms(request):
     # 只是校验手机号：不能为空、格式是否正确
     tpl = request.GET.get('tpl')
     template_id = settings.TENCENT_SMS_TEMPLATE.get(tpl)
-    print(template_id)
     if form.is_valid():
         # 所有验证通过发送短信
         code = random.randrange(1000, 9999)

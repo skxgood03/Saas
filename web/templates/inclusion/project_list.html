@@ -17,7 +17,7 @@
             {% if join %}
                 <li class="divider"></li>
                 <li><i class="fa fa-handshake-o" aria-hidden="true"></i> 我参与的</li>
-                {% for item in my %}
+                {% for item in join %}
                     <li><a href="{% url 'dashboard' project_id=item.project.id %}">{{ item.project.name }}</a></li>
                 {% endfor %}
             {% endif %}

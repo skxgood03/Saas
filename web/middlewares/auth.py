@@ -43,10 +43,11 @@ class AuthMiddlewares(MiddlewareMixin):
         if _object.end_datetime and _object.end_datetime < current_datetime:
             _object = Transaction.objects.filter(user=user_object, price_policy__category=1).first()
 
+
         request.saas.price_policy = _object.price_policy  # 当前登录用户的额度信息
 
     def process_view(self, request, view, args, kwargs):
-        # 判断URl是否以manage开头,如果是则项目ID是否是我创建 or 参与
+        # 判断URl是否以manage开头,如果是，则项目ID是否是我创建 or 参与
         if not request.path_info.startswith('/manage/'):
             return
         project_id = kwargs.get('project_id')
