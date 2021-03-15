@@ -60,6 +60,32 @@ class CheckFilter(object):
         for item in self.data_list:
             key = str(item[0])
             text = item[1]
+            if text == "任务":
+                text ='  <i class="fa fa-file" aria-hidden="true" style="color: #33cc66"></i> '+text
+            if text == "功能":
+                text ='  <i class="fa fa-cog" aria-hidden="true" style="color: #6666cc"></i> '+text
+            if text == "Bug":
+                text ='  <i class="fa fa-bug" aria-hidden="true" style="color: #330033"></i> '+text
+            if text == "新建":
+                text ='  <i class="fa fa-plus-square" aria-hidden="true" style="color: 	#9A32CD"></i> '+text
+            if text == "处理中":
+                text ='  <i class="fa fa-hourglass-end" aria-hidden="true" style="color: #FFFF00"></i> '+text
+            if text == "已解决":
+                text ='  <i class="fa fa-check-square" aria-hidden="true" style="color: #0099ff"></i> '+text
+            if text == "已忽略":
+                text ='  <i class="fa fa-eye-slash" aria-hidden="true" style="color:#1E1E1E"></i> '+text
+            if text == "待反馈":
+                text ='  <i class="fa fa-exclamation-circle" aria-hidden="true" style="color: #33cc66"></i> '+text
+            if text == "已关闭":
+                text ='  <i class="fa fa-toggle-off" aria-hidden="true" style="color: #33cc66"></i> '+text
+            if text == "重新打开":
+                text ='  <i class="fa fa-refresh" aria-hidden="true" style="color:#8968CD"></i> '+text
+            if text == "高":
+                text ='  <i class="fa fa-circle" aria-hidden="true" style="color: red"></i> '+text
+            if text == "中":
+                text ='  <i class="fa fa-circle" aria-hidden="true" style="color: #f1ea00"></i> '+text
+            if text == "低":
+                text ='  <i class="fa fa-circle" aria-hidden="true" style="color: #70B7FF"></i> '+text
             ck = ""
             # 如果当前用户请求的URL中status和当前循环key相等
             value_list = self.request.GET.getlist(self.name)
@@ -79,7 +105,7 @@ class CheckFilter(object):
 
             # self.request.path_info+query_dict.urlencode() = http://127.0.0.1:8001/manage/20/issues/+status=1&status=2&xx=1
             url = "{}?{}".format(self.request.path_info, query_dict.urlencode())  # status=1&status=2&xx=1
-            tpl = '<a class="cell" href="{url}"><input type="checkbox" {ck} /><label>{text}</label></a>'
+            tpl = '<a class="cell" href="{url}"><input type="checkbox" {ck} /><label style="color: #3D3D3D" >{text}</label></a>'
             html = tpl.format(url=url, ck=ck, text=text)
             yield mark_safe(html)
 

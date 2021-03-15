@@ -46,7 +46,7 @@
             color: white;
             padding: 1px 5px;
             border-radius: 5px;
-            background-color: #9c3328;
+            background-color: red;
         }
 
         .editormd {
@@ -69,13 +69,13 @@
         .filter-area .item .check-list a {
             text-decoration: none;
             display: inline-block;
-            min-width: 65px;
+            min-width: 90px;
         }
 
         .filter-area .item .check-list label {
             font-weight: 200;
             font-size: 13px;
-            margin-left: 3px;
+            margin-left: 11px;
         }
 
         .filter-area .item .check-list a:hover {
@@ -83,7 +83,7 @@
         }
 
         .filter-area .item .check-list .cell {
-            margin-right: 10px;
+            margin-right: 30px;
         }
     </style>
 {% endblock %}
@@ -147,7 +147,14 @@
                     {% for item in issues_object_list %}
                         <tr>
                             <td class="number">
-                                <i class="fa fa-circle text-{{ item.priority }}"></i>
+                                {% if item.priority == "danger" %}
+                                    <i class="fa fa-circle" aria-hidden="true" style="color: red"></i>
+                                {% elif item.priority == "warning" %}
+                                    <i class="fa fa-circle" aria-hidden="true" style="color: #f1ea00"></i>
+                                {% elif item.priority == "success" %}
+                                    <i class="fa fa-circle" aria-hidden="true" style="color: #70B7FF"></i>
+                                {% endif %}
+
                                 <a target="_blank"
                                    href="{% url 'issues_detail' project_id=request.saas.project.id issues_id=item.id %}">{% string_just item.id %}</a>
                             </td>
