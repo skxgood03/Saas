@@ -4,7 +4,7 @@
 {% block css %}
     {#    引入marked的css#}
     <link rel="stylesheet" href="{% static 'plugin/Marked/css/editormd.min.css' %}">
-    <link rel="stylesheet" href="{% static 'plugin/dist/css/bootstrap-datepicker.min.css' %}">
+    <link rel="stylesheet" href="{% static 'plugin/bootstrap-datepicker/css/bootstrap-datepicker.min.css' %}">
     <link rel="stylesheet" href="{% static 'plugin/bootstrap-select/css/bootstrap-select.min.css' %}">
     <link rel="stylesheet" href="{% static 'plugin/select2/css/select2.min.css' %}">
     <style>
@@ -32,7 +32,21 @@
             color: white;
             padding: 1px 5px;
             border-radius: 5px;
-            background-color: #dddddd;
+            background-color: #00c4ff;
+        }
+
+        .issues-list .issue .tags .type1 {
+            color: white;
+            padding: 1px 5px;
+            border-radius: 5px;
+            background-color: #00d95a;
+        }
+
+        .issues-list .issue .tags .type2 {
+            color: white;
+            padding: 1px 5px;
+            border-radius: 5px;
+            background-color: #9c3328;
         }
 
         .editormd {
@@ -83,7 +97,30 @@
                 <div class="panel-body filter-area">
                     {% for row in filter_list %}
                         <div class="item">
-                            <div class="title"> <i class="fa fa-street-view" aria-hidden="true"></i>{{ row.title }}</div>
+
+                            {% if row.title == "类型" %}
+                                <div class="title">
+                                    <i class="fa fa-bookmark" aria-hidden="true"></i> {{ row.title }}
+                                </div>
+                            {% elif row.title == "状态" %}
+                                <div class="title">
+                                    <i class="fa fa-modx" aria-hidden="true"></i> {{ row.title }}
+                                </div>
+                            {% elif row.title == "优先级" %}
+                                <div class="title">
+                                    <i class="fa fa-american-sign-language-interpreting"
+                                       aria-hidden="true"></i> {{ row.title }}
+                                </div>
+                            {% elif row.title == "指派" %}
+                                <div class="title">
+                                    <i class="fa fa-hand-o-right" aria-hidden="true"></i> {{ row.title }}
+                                </div>
+                            {% elif row.title == "关注" %}
+                                <div class="title">
+                                    <i class="fa fa-heart-o" aria-hidden="true"></i> {{ row.title }}
+                                </div>
+                            {% endif %}
+
                             <div class="check-list">
                                 {% for item in row.filter %}
                                     {{ item }}
@@ -120,13 +157,58 @@
                                        href="{% url 'issues_detail' project_id=request.saas.project.id issues_id=item.id %}">{{ item.subject }}</a>
                                 </div>
                                 <div class="tags">
-                                    <span class="type">
-                                        {{ item.issues_type.title }}
+                                    {% if item.issues_type.title == '任务' %}
+                                        <span class="type">
+                                            {{ item.issues_type.title }}
+                                            </span>
+                                    {% elif item.issues_type.title == '功能' %}
+                                        <span class="type1">
+                                            {{ item.issues_type.title }}
+                                            </span>
+                                    {% elif item.issues_type.title == 'Bug' %}
+                                        <span class="type2">
+                                            {{ item.issues_type.title }}
+                                            </span>
+                                    {% endif %}
+                                    {% if item.get_status_display == "新建" %}
+                                        <span style="color: #06b6ef">
+                                    <i class="fa fa-bell" aria-hidden="true"></i>
+                                            {{ item.get_status_display }}
+                                            </span>
+                                    {% elif item.get_status_display == "处理中" %}
+                                        <span style="color: #00d95a">
+                                             <i class="fa fa-refresh" aria-hidden="true"></i>
+                                                {{ item.get_status_display }}
+                                                </span>
+                                    {% elif item.get_status_display == "已解决" %}
+                                        <span style="color: #00FF00">
+                                                <i class="fa fa-check-circle" aria-hidden="true"></i>
+                                                {{ item.get_status_display }}
+                                                </span>
+                                    {% elif item.get_status_display == "已忽略" %}
+                                        <span style="color: #586e75">
+                                                <i class="fa fa-eye-slash" aria-hidden="true"></i>
+                                                {{ item.get_status_display }}
+                                        </span>
+                                    {% elif item.get_status_display == "待反馈" %}
+                                        <span style="color: #FF0000">
+                                                <i class="fa fa-exclamation-circle" aria-hidden="true"></i>
+                                                {{ item.get_status_display }}
                                     </span>
-                                    <span>
-                                        <i class="fa fa-refresh" aria-hidden="true"></i>
-                                        {{ item.get_status_display }}
+                                    {% elif item.get_status_display == "已关闭" %}
+                                        <span style="color: #3f3f3f">
+                                                <i class="fa fa-toggle-off" aria-hidden="true"></i>
+                                                {{ item.get_status_display }}
                                     </span>
+                                    {% elif item.get_status_display == "重新打开" %}
+                                        <span style="color: #dd5e89">
+                                                <i class="fa fa-refresh" aria-hidden="true"></i>
+                                                {{ item.get_status_display }}
+                                    </span>
+                                    {% endif %}
+
+
+
                                     {% if item.assign %}
                                         <span>
                                         <i class="fa fa-hand-o-right" aria-hidden="true"></i>
@@ -382,8 +464,8 @@
 {% block js %}
     {#    引入marked的js#}
     <script src='{% static 'plugin/Marked/editormd.min.js' %}'></script>
-    <script src='{% static 'plugin/dist/js/bootstrap-datepicker.min.js' %}'></script>
-    <script src='{% static 'plugin/dist/locales/bootstrap-datepicker.zh-CN.min.js' %}'></script>
+    <script src='{% static 'plugin/bootstrap-datepicker/js/bootstrap-datepicker.min.js' %}'></script>
+    <script src='{% static 'plugin/bootstrap-datepicker/locales/bootstrap-datepicker.zh-CN.min.js' %}'></script>
     <script src='{% static 'plugin/bootstrap-select/js/bootstrap-select.min.js' %}'></script>
     <script src='{% static 'plugin/bootstrap-select/js/i18n/defaults-zh_CN.min.js' %}'></script>
     <script src='{% static 'plugin/select2/js/i18n/zh-CN.js' %}'></script>
@@ -487,14 +569,14 @@
         /*
         初始化markdown编辑器（textare转换为编辑器）
          */
-         function initEdtorMd() {
-            editormd('editor',{
-                placeholder:'请输入内容',
-                height:300,
-                path:'{% static 'plugin/Marked/lib/' %}',
-                imageUpload:true,
-                imageFormats:['jpg','jpeg','png','gif'],
-                imageUploadURL:WIKI_UPLOAO_URL
+        function initEdtorMd() {
+            editormd('editor', {
+                placeholder: '请输入内容',
+                height: 300,
+                path: '{% static 'plugin/Marked/lib/' %}',
+                imageUpload: true,
+                imageFormats: ['jpg', 'jpeg', 'png', 'gif'],
+                imageUploadURL: WIKI_UPLOAO_URL
             })
 
         }

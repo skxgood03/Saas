@@ -3,7 +3,7 @@
 
 {% block css %}
     <link rel="stylesheet" href="{% static 'plugin/Marked/css/editormd.min.css' %}">
-    <link rel="stylesheet" href="{% static 'plugin/dist/css/bootstrap-datepicker.min.css' %}">
+    <link rel="stylesheet" href="{% static 'plugin/bootstrap-datepicker/css/bootstrap-datepicker.min.css' %}">
     <link rel="stylesheet" href="{% static 'plugin/bootstrap-select/css/bootstrap-select.min.css' %}">
     <style>
 
@@ -17,7 +17,7 @@
             display: inline-block;
             width: 30px;
             height: 30px;
-            background-color: #304659;
+            background-color: rgb(250, 0, 255);
             color: white;
             text-align: center;
             line-height: 30px;
@@ -300,8 +300,8 @@
 
 {% block js %}
     <script src="{% static 'plugin/Marked/editormd.min.js' %}"></script>
-    <script src="{% static 'plugin/dist/js/bootstrap-datepicker.min.js' %}"></script>
-    <script src="{% static 'plugin/dist/locales/bootstrap-datepicker.zh-CN.min.js' %}"></script>
+    <script src="{% static 'plugin/bootstrap-datepicker/js/bootstrap-datepicker.min.js' %}"></script>
+    <script src="{% static 'plugin/bootstrap-datepicker/locales/bootstrap-datepicker.zh-CN.min.js' %}"></script>
     <script src="{% static 'plugin/bootstrap-select/js/bootstrap-select.min.js' %}"></script>
     <script src="{% static 'plugin/bootstrap-select/js/i18n/defaults-zh_CN.min.js' %}"></script>
     <script>
@@ -318,7 +318,7 @@
             bindCancelReplyUser();
             bindSubmit();
             bindChangeIssues();
-
+            colo()
 
 
         });
@@ -491,7 +491,26 @@
             })
         }
 
+
+        function colo() {
+            $(".left-avatar").css("background-color", getcolor())
+        }
+        function getcolor() {
+            var rgb = [];
+            rgb[0] = Math.floor(Math.random() * 255);
+            rgb[1] = Math.floor(Math.random() * 255);
+            rgb[2] = Math.floor(Math.random() * 255);
+            return "rgb" + "(" + rgb[0] + "," + rgb[1] + "," + rgb[2] + ")";
+
+
+
+        }
+
     </script>
 
 
 {% endblock %}
+
+{##}
+{#var n = document.getElementById('left-avatar');#}
+{#n.style.background-color(rand(0, 255), rand(0, 255), rand(0, 255));#}

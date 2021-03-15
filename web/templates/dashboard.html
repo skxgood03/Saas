@@ -37,8 +37,7 @@
             display: inline-block;
             width: 30px;
             height: 30px;
-            background-color: #304659;
-            color: white;
+        {#background-color: #304659;#} color: white;
             text-align: center;
             line-height: 30px;
             border-radius: 50%;
@@ -197,7 +196,34 @@
     {#     Highcharts#}
     <script src="http://cdn.highcharts.com.cn/highcharts/9.0.1/highcharts.js"></script>
     <script>
+
         var INITCHART = "{% url 'issues_chart' project_id=request.saas.project.id %}"
+        $(function () {
+            colo();
+            colo1();
+
+
+        });
+
+        function colo() {
+            $(".avatar").css("background-color", getcolor())
+        }
+
+        function colo1() {
+            $(".count").css("color", getcolor())
+        }
+
+
+        function getcolor() {
+            var rgb = [];
+            rgb[0] = Math.floor(Math.random() * 255);
+            rgb[1] = Math.floor(Math.random() * 255);
+            rgb[2] = Math.floor(Math.random() * 255);
+            return "rgb" + "(" + rgb[0] + "," + rgb[1] + "," + rgb[2] + ")";
+
+
+        }
+
         //关闭ｕｔｃ时间，默认使用东吧区时间
         Highcharts.setOptions({
             global: {
@@ -266,5 +292,7 @@
                 }
             })
         }
+
+
     </script>
 {% endblock %}

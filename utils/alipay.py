@@ -76,7 +76,7 @@ class AliPay(object):
                 complex_keys.append(key)
 
         # 将字典类型的数据dump出来
-        for key in complex_keys:
+        for key in complex_keys:    
             data[key] = json.dumps(data[key], separators=(',', ':'))
 
         return sorted([(k, v) for k, v in data.items()])

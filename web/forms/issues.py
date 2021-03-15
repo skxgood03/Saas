@@ -7,9 +7,10 @@ class IssuesModelForm(Bootstrap,forms.ModelForm):
         model = Issues
         exclude = ['project','create_datetime','creator','latest_update_datetime']
         widgets = {
-            'assign':forms.Select(attrs={'class':"seletepicker","data-live-search":"true"}),
+            'assign':forms.Select(attrs={'class':"selectpicker","data-live-search":"true"}),
             'attention':forms.SelectMultiple(attrs={'class':'selectpicker',"data-live-search":"true","data-actions-box":"true"}),
             'parent': forms.Select(attrs={'class': "seletepicker", "data-live-search": "true"}),
+
         }
 
     def __init__(self,request,*args,**kwargs):

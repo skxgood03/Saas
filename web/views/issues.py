@@ -72,7 +72,7 @@ class CheckFilter(object):
             # 为自己生成URL
             ##在当前URl基础上去增加
             query_dict = self.request.GET.copy()
-            query_dict._mutable = True
+            query_dict._mutable = True  #加上Ｔｒｕｅ
             query_dict.setlist(self.name, value_list)  # {'status':[1,2..],'xx':[1,]}
             if 'page' in query_dict:
                 query_dict.pop('page')
@@ -126,11 +126,11 @@ def issues(request, project_id):
             'issues_object_list': issues_object_list,
             'page_html': page_object.page_html(),
             'filter_list': [
-                {'title': "问题类型", 'filter': CheckFilter('issues_type',project_issues_type, request)},
+                {'title': "类型", 'filter': CheckFilter('issues_type',project_issues_type, request)},
                 {'title': "状态", 'filter': CheckFilter('status', Issues.status_choices, request)},
                 {'title': "优先级", 'filter': CheckFilter('priority', Issues.priority_choices, request)},
-                {'title': "指派者", 'filter': SelectFilter('assign', project_total_user, request)},
-                {'title': "关注者", 'filter': SelectFilter('attention', project_total_user, request)},
+                {'title': "指派", 'filter': SelectFilter('assign', project_total_user, request)},
+                {'title': "关注", 'filter': SelectFilter('attention', project_total_user, request)},
             ]
         }
         return render(request, 'issues.html', context)
@@ -250,7 +250,7 @@ def issues_change(request, project_id, issues_id):
             setattr(issues_object, name, value)  # 反射
             issues_object.save()
             # 记录:xx更改为value
-            change_record = "{}更改为{}".format(field_object.verbose_name, value)
+            change_record = "{}更改为：{}".format(field_object.verbose_name, value)
         return JsonResponse({'status': True, 'data': create_reply_record(change_record)})
     # 1.2 Fk字段
     if name in ['issues_type', 'module', 'parent', 'assign']:
@@ -278,7 +278,7 @@ def issues_change(request, project_id, issues_id):
                     return JsonResponse({'status': False, 'error': "您选择的值不存在"})
                 setattr(issues_object, name, instance)
                 issues_object.save()
-                change_record = "{}更改为{}".format(field_object.verbose_name, str(instance))
+                change_record = "{}更改为：{}".format(field_object.verbose_name, str(instance))
             else:
                 # 条件判断:用户输入的值是否是自己的
                 instance = field_object.remote_field.model.objects.filter(id=value, project_id=project_id).first()  # 传进来的值,关联的对象
@@ -286,7 +286,7 @@ def issues_change(request, project_id, issues_id):
                     return JsonResponse({'status': False, 'error': "您选择的值不存在"})
                 setattr(issues_object, name, instance)
                 issues_object.save()
-                change_record = "{}更改为{}".format(field_object.verbose_name, str(instance))
+                change_record = "{}更改为：{}".format(field_object.verbose_name, str(instance))
 
             return JsonResponse({'status': True, 'data': create_reply_record(change_record)})
     # 1.3 choices字段
@@ -300,7 +300,7 @@ def issues_change(request, project_id, issues_id):
 
         setattr(issues_object, name, value)
         issues_object.save()
-        change_record = "{}更新为{}".format(field_object.verbose_name, selected_text)
+        change_record = "{}更新为：{}".format(field_object.verbose_name, selected_text)
         return JsonResponse({'status': True, 'data': create_reply_record(change_record)})
 
     # M2M字段
@@ -333,7 +333,7 @@ def issues_change(request, project_id, issues_id):
 
         return JsonResponse({'status': True, 'data': create_reply_record(change_record)})
 
-    return JsonResponse({'status': False, 'error': "滚"})
+    return JsonResponse({'status': False, 'error': "滚蛋"})
 
 def invite_url(request, project_id, ):
     """生成验证码"""

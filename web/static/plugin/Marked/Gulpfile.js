@@ -274,7 +274,7 @@ gulp.task("cm-mode", function() {
     return gulp.src(modes)
                 .pipe(concat("modes.min.js"))
                 .pipe(gulp.dest(codeMirror.path.dist))
-                .pipe(uglify()) // {outSourceMap: true, sourceRoot: codeMirror.path.dist}
+                .pipe(uglify()) // {outSourceMap: true, sourceRoot: codeMirror.path.bootstrap-datepicker}
                 .pipe(gulp.dest(codeMirror.path.dist))	
                 .pipe(header(headerMiniComment, {pkg : pkg, fileName : function(file) {
                     var name = file.path.split(file.base + "\\"); 
@@ -296,7 +296,7 @@ gulp.task("cm-addon", function() {
     return gulp.src(addons)
                 .pipe(concat("addons.min.js"))
                 .pipe(gulp.dest(codeMirror.path.dist))
-                .pipe(uglify()) //{outSourceMap: true, sourceRoot: codeMirror.path.dist}
+                .pipe(uglify()) //{outSourceMap: true, sourceRoot: codeMirror.path.bootstrap-datepicker}
                 .pipe(gulp.dest(codeMirror.path.dist))	
                 .pipe(header(headerMiniComment, {pkg : pkg, fileName : function(file) {
                     var name = file.path.split(file.base + "\\");
