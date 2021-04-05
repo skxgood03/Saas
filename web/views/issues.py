@@ -391,7 +391,7 @@ def invite_url(request, project_id, ):
 def invite_join(request,code):
     """访问邀请码"""
     current_datetime = datetime.datetime.now()
-    invite_object = ProjectInvite.objects.filter(code=code).first()
+    invite_object = ProjectInvite   .objects.filter(code=code).first()
     if not invite_object:
         return render(request,'invite_join.html',{'error':'邀请码不存在'})
     if invite_object.project.creator == request.saas.user:

@@ -22,7 +22,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = '0&uz-q%pyi#7c_2t5uo1hzrem(20l6*#pm25r97_-79fbgni#o'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG =True
+
 
 ALLOWED_HOSTS = []
 
@@ -131,7 +132,7 @@ STATIC_URL = '/static/'
 TENCENT_SMS_APP_ID = 6666666666
 
 # 腾讯云短信应用的 app_key
-TENCENT_SMS_APP_KEY = "6666666666666666666666"
+# TENCENT_SMS_APP_KEY = "6666666666666666666666"
 
 # 腾讯云短信签名内容
 TENCENT_SMS_SIGN = "Python之路"

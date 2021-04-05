@@ -47,11 +47,13 @@ def payment(request, policy_id):
         _object = Transaction.objects.filter(user=request.saas.user, status=2).order_by('-id').first()
         total_timedelta = _object.end_datetime - _object.start_datetime
         balance_timedelta = _object.end_datetime - datetime.datetime.now()
+        print(total_timedelta.days)
+        print(balance_timedelta.days)
         if total_timedelta.days == balance_timedelta.days:
             # 按照价值进行计算抵扣金额
-            balance = _object.price_policy * price * _object.count / total_timedelta.days * (balance_timedelta.days - 1)
+            balance = _object.price / total_timedelta.days * (balance_timedelta.days - 1)
         else:
-            balance = _object.price_policy * price * _object.count / total_timedelta.days * balance_timedelta.days
+            balance = _object.price / total_timedelta.days * balance_timedelta.days
 
     if balance >= origin_price:
         return redirect('price')
