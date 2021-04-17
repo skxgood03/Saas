@@ -39,7 +39,7 @@ def project_list(request):
     form = ProjectMOdelFrom(request, data=request.POST)
     if form.is_valid():
         name = form.cleaned_data['name']
-        # 1.为项目创建cos桶
+        # 1.为项目创建cos桶(1304763026换成自己的)
         bucket = "{}-{}-1304763026".format(request.saas.user.phone, str(int(time.time())))
         region = 'ap-chengdu'
         create_bucket(bucket,region)

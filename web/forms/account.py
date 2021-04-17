@@ -141,7 +141,7 @@ class LoginSMSForm(Bootstrap,forms.Form):
         user_object = UserInfo.objects.filter(phone=phone).first()
         if not user_object:
             raise ValidationError('手机号未注册')
-        return phone
+        return user_object
 
     def clean_code(self):
         code = self.cleaned_data['code']

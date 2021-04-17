@@ -78,7 +78,7 @@
                     dataType: 'JSON',
                     success: function (res) {
                         if (res.status) {
-                            location.href = res.data
+                            location.href = {% url 'index' %}
                         } else {
                             $.each(res.error, function (key, value) {
                                 {#console.log(key);#}
