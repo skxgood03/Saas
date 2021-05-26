@@ -37,7 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'app01',
-    'web'
+    'web',
+
 ]
 
 MIDDLEWARE = [
@@ -154,7 +155,7 @@ WHITE_REGEX_URL_LIST = [
     '/send/sms/',
     '/login/',
     '/image_code/',
-    '',
+    '/',
     '/login/sms/',
     '/price/',
 
